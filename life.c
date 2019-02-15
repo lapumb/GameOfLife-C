@@ -12,6 +12,9 @@ char** get_grid(int x, int y) {
 	// ex; x = 2, y = 3 (char)
 	// x --> y y y
 	// x --> y y y
+
+	
+
 	return NULL;	
 }
 
