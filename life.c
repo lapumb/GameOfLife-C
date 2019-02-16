@@ -13,9 +13,16 @@ char** get_grid(int x, int y) {
 	// x --> y y y
 	// x --> y y y
 
+	//allocating the num rows
+	char **c = (char **)malloc(x*sizeof(char));
 	
-
-	return NULL;	
+	//adding columns to the rows
+	for(int i = 0; i < x; i++) {
+		//(c[i*sizeof(char)] = (char *)malloc(y*sizeof(char));
+		*(c+i) = (char *)malloc(y*sizeof(char));
+	}
+	
+	return c;
 }
 
 /*
@@ -25,6 +32,16 @@ char** get_grid(int x, int y) {
  */
 void print_grid(int x, int y, char** grid) {
 	// TO DO: IMPLEMENT THIS FUNCTION
+
+	for(int i = 0; i < x; i++) {
+		//printf("\n"); 
+		for(int j = 0; j < y; j++) {
+			*(*(grid+i)+j) = '-';
+			printf("%c ", (*(*(grid+i)+j)));
+		}
+		printf("\n"); 
+	}
+	printf("\n"); 
 }
 
 /*
