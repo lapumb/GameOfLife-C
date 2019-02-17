@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-//helper functions used within the file
-bool is_alive(char c); 
-
 /*
  * get_grid creates new memory for a "grid".
  * x is the height and y is the width.
@@ -15,6 +12,12 @@ char** get_grid(int x, int y) {
 	// ex; x = 2, y = 3 (char)
 	// x --> y y y
 	// x --> y y y
+
+	//checking for errors
+	if(x > 30 || y > 30 || x < 3 || y < 3) {
+		printf("The size of your grid must be between 3 and 30. Please retry. \n"); 
+		exit(1); 
+	}
 
 	//allocating the num rows
 	char **c = (char **)malloc(x*sizeof(char));
@@ -167,17 +170,4 @@ int get_neighbors(int i, int j, int x, int y, char** grid) {
 	}
 	
 	return count;
-}
-
-
-/*
-* Helper function to see if the selected character is 'alive' or not. 
-* Only used weithin this file. Improted bool. 
-*/
-bool is_alive(char c) {
-	if(c == '.') {
-		return true; 
-	}
-
-	return false; 
 }
