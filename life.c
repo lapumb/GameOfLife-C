@@ -4,8 +4,7 @@
 #include <stdbool.h>
 
 //helper functions used within the file
-void initialize_grid(int x, int y, char** grid); 
-bool is_alive(int c);  
+bool is_alive(char c); 
 
 /*
  * get_grid creates new memory for a "grid".
@@ -34,19 +33,15 @@ char** get_grid(int x, int y) {
  * provided by grid
  */
 void print_grid(int x, int y, char** grid) {
-	//initializing the grid to be all '-' 
-	//initialize_grid(x, y, grid);
-
 	for(int i = 0; i < x; i++) {
 		for(int j = 0; j < y; j++) {
-			//mutate(x, y, grid); 
-			/*if(is_alive((*(*(grid+i)+j)))) {
-				(*(*(grid+i)+j)) = '.';
+			if(*(*(grid+i)+j) == 0) {
+				*(*(grid+i)+j) = '.';
 			}
-			else {
-				(*(*(grid+i)+j)) = 'X';
-			} */
-			printf("%d ", (*(*(grid+i)+j)));
+			else if(*(*(grid+i)+j) == 1) {
+				*(*(grid+i)+j) = 'X'; 
+			}
+			printf("%c ", (*(*(grid+i)+j)));
 		}
 		printf("\n"); 
 	}
@@ -65,29 +60,42 @@ char** mutate(int x, int y, char** grid) {
 	3. A live cell with more than three neighbors dies
 	4. A dead cell with three live neighbors becomes live
 	*/
+	char **temp = get_grid(x, y);
+	for(int m = 0; m < x; m++) {
+		for(int n = 0; n < y; n++) {
+			temp[m][n] = grid[m][n]; 
+		}
+	} 
+
+	int numNeighbors = 0; 
 	for(int i = 0; i < x; i++) {
 		for(int j = 0; j < y; j++) {
-			int numNeighbors = get_neighbors(i, j, x, y, grid); 
-			if(numNeighbors < 2) {
-				//dying
-				*(*(grid+i)+j) = 0;
+			numNeighbors = get_neighbors(i, j, x, y, temp); 
+			if(*(*(grid+i)+j) == 'X') {
+				if(numNeighbors < 2) {
+					//dying
+					*(*(grid+i)+j) = '.';
+				}
+				else if(numNeighbors == 2 || numNeighbors == 3) {
+					//lives
+					*(*(grid+i)+j) = 'X';
+				}
+				else if(numNeighbors > 3) {
+					//dying
+					*(*(grid+i)+j) = '.';
+				}
+				//printf("%d \n", numNeighbors);
 			}
-			else if(numNeighbors > 2 && numNeighbors < 4) {
-				//lives
-				*(*(grid+i)+j) = 1;
-			}
-			else if(numNeighbors > 3) {
-				//dying
-				*(*(grid+i)+j) = 0;
-			}
-			else if(!is_alive(*(*(grid+i)+j)) && numNeighbors == 3) {
-				//live
-				*(*(grid+i)+j) = 1;
+			else{
+				if(numNeighbors == 3) {
+					//live
+					*(*(grid+i)+j) = 'X';
+				}
 			}
 		}
 	}
 
-	print_grid(x, y, grid);
+	free(temp);
 	return grid;
 }
 
@@ -96,68 +104,59 @@ char** mutate(int x, int y, char** grid) {
  */
 int get_neighbors(int i, int j, int x, int y, char** grid) {
 	int count = 0; 
-	int ul, u, ur, l, r, dl, d, dr; 
 	
 	//up/left
-	if(i > 0 && j > 0 && i <= x && j <= y) { //making sure i and j are in bounds
-		ul = *(*(grid+i-1)+j-1); 
-		if(is_alive(ul)) {
+	if(i > 0 && j > 0 && i < x && j < y) { //making sure i and j are in bounds
+		if(*(*(grid+i-1)+j-1) == 'X') {
 			count++; 
 		}
 	}
 
 	//up
 	if(i > 0 && j >= 0 && i <= x && j <= y) {
-		u = *(*(grid+i-1)+j); 
-		if(is_alive(u)) {
+		if(*(*(grid+i-1)+j) == 'X') {
 			count++; 
 		}
 	}
 
 	//up/right
-	if(i > 0 && j >= 0 && i <= x && j < y) {
-		ur = *(*(grid+i-1)+j+1); 
-		if(is_alive(ur)) {
+	if(i > 0 && j >= 0 && i < x && j < (y-1)) { 
+		if(*(*(grid+i-1)+j+1) == 'X') {
 			count++; 
 		}
 	}
 
 	//left
-	if(i >= 0 && j > 0 && i <= x && j <= y) {
-		l = *(*(grid+i)+j-1); 
-		if(is_alive(l)) {
+	if(i >= 0 && j > 0 && i < x && j < y) { 
+		if(*(*(grid+i)+j-1) == 'X') {
 			count++; 
 		}
 	}
 
 	//right
-	if(i >= 0 && j >= 0 && i <= x && j < y) {
-		r = *(*(grid+i)+j+1); 
-		if(is_alive(r)) {
+	if(i >= 0 && j >= 0 && i < x && j < (y-1)) { 
+		if(*(*(grid+i)+j+1) == 'X') {
 			count++; 
 		}
 	}
 
 	//down/left
-	if(i >= 0 && j > 0 && i < x && j <= y) {
-		dl = *(*(grid+i+1)+j-1); 
-		if(is_alive(dl)) {
+	if(i >= 0 && j > 0 && i < (x-1) && j < y) { 
+		if(*(*(grid+i+1)+j-1) == 'X') {
 			count++; 
 		}
 	}
 
 	//down
-	if(i >= 0 && j >= 0 && i < x && j <= y) {
-		d = *(*(grid+i+1)+j); 
-		if(is_alive(d)) {
+	if(i >= 0 && j >= 0 && i < (x-1) && j < y) { 
+		if(*(*(grid+i+1)+j) == 'X') {
 			count++; 
 		}
 	}
 
 	//down/right
-	if(i >= 0 && j >= 0 && i < x && j < y) {
-		dr = *(*(grid+i+1)+j+1); 
-		if(is_alive(dr)) {
+	if(i >= 0 && j >= 0 && i < (x-1) && j < (y-1)) {
+		if(*(*(grid+i+1)+j+1) == 'X') {
 			count++; 
 		}
 	}
@@ -172,23 +171,11 @@ int get_neighbors(int i, int j, int x, int y, char** grid) {
 
 
 /*
-* Helper function to initialize the grid to all '.'
-* Only used within this file. 
-*/
-void initialize_grid(int x, int y, char** grid) {
-	for(int i = 0; i < x; i++) {
-		for(int j = 0; j < y; j++) {
-			*(*(grid+i)+j) = '.';
-		}
-	}
-}
-
-/*
 * Helper function to see if the selected character is 'alive' or not. 
 * Only used weithin this file. Improted bool. 
 */
-bool is_alive(int c) {
-	if(c == 1) {
+bool is_alive(char c) {
+	if(c == '.') {
 		return true; 
 	}
 
