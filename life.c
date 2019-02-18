@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+/* @authors Professor Woodring, Blake Lapum, Cole Sellers
+*  @date Winter 2019
+*/
+
 /*
  * get_grid creates new memory for a "grid".
  * x is the height and y is the width.
